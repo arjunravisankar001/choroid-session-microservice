@@ -15,7 +15,7 @@ public class Session {
     private Long id; //unique session ID
     private String creatorId; //username of the session creator
     private String title; //session title
-    private String start; //start date and time of the session
+    private LocalDateTime start; //start date and time of the session
     private Integer duration; //session duration in minutes
     private String tags; //session-relevant tags
     private String meetingLink; //link to the session
@@ -27,7 +27,7 @@ public class Session {
 
     }
 
-    public Session(String creatorId, String title, String start, Integer duration, String tags, String meetingLink, String resourcesLink) {
+    public Session(String creatorId, String title, LocalDateTime start, Integer duration, String tags, String meetingLink, String resourcesLink) {
         this.creatorId = creatorId;
         this.title = title;
         this.start = start;
@@ -61,11 +61,11 @@ public class Session {
         this.title = title;
     }
 
-    public String getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
-    public void setStart(String start) {
+    public void setStart(LocalDateTime start) {
         this.start = start;
     }
 

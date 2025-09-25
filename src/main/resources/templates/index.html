@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Session Dashboard</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          background: #f4f6f9;
+        }
+        header {
+          background: #2c3e50;
+          color: white;
+          padding: 1rem;
+          display: flex;
+          justify-content: space-between;
+        }
+        header h1 {
+          margin: 0;
+        }
+        header button {
+          background: #3498db;
+          border: none;
+          padding: 0.5rem 1rem;
+          color: white;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-left: 0.5rem;
+        }
+        .container {
+          padding: 2rem;
+        }
+        .card {
+          background: white;
+          border-radius: 8px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+          padding: 1rem;
+          margin-bottom: 1rem;
+          cursor: pointer;
+          transition: transform 0.2s;
+        }
+        .card:hover {
+          transform: scale(1.02);
+        }
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        form input, form textarea {
+          padding: 0.5rem;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+        form button {
+          background: #27ae60;
+          color: white;
+          border: none;
+          padding: 0.7rem;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+        .detail-view {
+          background: white;
+          padding: 1.5rem;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .detail-view h2 {
+          margin-top: 0;
+        }
+        .btn-edit {
+          background: #e67e22;
+          color: white;
+          border: none;
+          padding: 0.5rem 1rem;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Session Dashboard</h1>
+    <div>
+        <button onclick="showAllSessions()">All Sessions</button>
+        <button onclick="showNewSessionForm()">New Session</button>
+    </div>
+</header>
+
+<div class="container" id="content"></div>
+
+<script>
+    const apiBase = "http://localhost:8080/session";
+
+    async function showAllSessions() {
+      const res = await fetch(apiBase);
+      const sessions = await res.json();
+      const container = document.getElementById("content");
+      container.innerHTML = "";
+      sessions.forEach(session => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `<h3>${session.title}</h3><p>By ${session.creatorId}</p><p>${session.tags || ""}</p>`;
+        card.onclick = () => showSessionDetails(session.id);
+        container.appendChild(card);
+      });
+    }
+
+    async function showSessionDetails(id) {
+      const res = await fetch(`${apiBase}/${id}`);
+      const session = await res.json();
+      const container = document.getElementById("content");
+      container.innerHTML = `
+        <div class="detail-view">
+          <h2>${session.title}</h2>
+          <p><b>Creator:</b> ${session.creatorId}</p>
+          <p><b>Start:</b> ${session.start}</p>
+          <p><b>Duration:</b> ${session.duration} minutes</p>
+          <p><b>Tags:</b> ${session.tags || ""}</p>
+          <p><b>Meeting:</b> <a href="${session.meetingLink}" target="_blank">Join</a></p>
+          <p><b>Resources:</b> <a href="${session.resourcesLink}" target="_blank">Resources</a></p>
+          <button class="btn-edit" onclick="showEditSessionForm(${id})">Edit</button>
+        </div>
+      `;
+    }
+
+    function showNewSessionForm() {
+      const container = document.getElementById("content");
+      container.innerHTML = `
+        <h2>Create New Session</h2>
+        <form onsubmit="createSession(event)">
+          <input name="creatorId" placeholder="Creator ID" required>
+          <input name="title" placeholder="Title" required>
+          <input name="start" type="datetime-local" required>
+          <input name="duration" type="number" placeholder="Duration (minutes)" required>
+          <input name="tags" placeholder="Tags">
+          <input name="meetingLink" placeholder="Meeting Link">
+          <input name="resourcesLink" placeholder="Resources Link">
+          <button type="submit">Create</button>
+        </form>
+      `;
+    }
+
+    async function createSession(event) {
+      event.preventDefault();
+      const form = event.target;
+      const data = {
+        creatorId: form.creatorId.value,
+        title: form.title.value,
+        start: form.start.value,
+        duration: parseInt(form.duration.value),
+        tags: form.tags.value,
+        meetingLink: form.meetingLink.value,
+        resourcesLink: form.resourcesLink.value
+      };
+      await fetch(apiBase, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+      showAllSessions();
+    }
+
+    async function showEditSessionForm(id) {
+      const res = await fetch(`${apiBase}/${id}`);
+      const session = await res.json();
+      const container = document.getElementById("content");
+      container.innerHTML = `
+        <h2>Edit Session</h2>
+        <form onsubmit="updateSession(event, ${id})">
+          <input name="creatorId" value="${session.creatorId}" required>
+          <input name="title" value="${session.title}" required>
+          <input name="start" type="datetime-local" value="${session.start.replace(' ', 'T')}" required>
+          <input name="duration" type="number" value="${session.duration}" required>
+          <input name="tags" value="${session.tags || ""}">
+          <input name="meetingLink" value="${session.meetingLink || ""}">
+          <input name="resourcesLink" value="${session.resourcesLink || ""}">
+          <button type="submit">Save</button>
+        </form>
+      `;
+    }
+
+    async function updateSession(event, id) {
+      event.preventDefault();
+      const form = event.target;
+      const data = {
+        creatorId: form.creatorId.value,
+        title: form.title.value,
+        start: form.start.value,
+        duration: parseInt(form.duration.value),
+        tags: form.tags.value,
+        meetingLink: form.meetingLink.value,
+        resourcesLink: form.resourcesLink.value
+      };
+      await fetch(`${apiBase}/${id}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+      showSessionDetails(id);
+    }
+
+    // Load all sessions initially
+    showAllSessions();
+</script>
+</body>
+</html>
