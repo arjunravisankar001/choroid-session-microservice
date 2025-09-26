@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Session Dashboard</title>
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          color: white;
+          padding: 1rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+          margin: 0;
+          font-size: 1.8rem;
+          font-weight: 600;
+        }
+
+        header button {
+          background: white;
+          color: #4f46e5;
+          border: none;
+          padding: 0.6rem 1.2rem;
+          font-weight: 600;
+          border-radius: 8px;
+          cursor: pointer;
+          margin-left: 0.5rem;
+          transition: all 0.3s ease;
+        }
+
+        header button:hover {
+          background: #4f46e5;
+          color: white;
+          transform: translateY(-2px);
+        }
+
+        /* Layout container */
+        .container {
+          padding: 2rem;
+          max-width: 1000px;
+          margin: auto;
+        }
+
+        /* Session cards */
+        .card {
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+          padding: 1.5rem;
+          margin-bottom: 1.5rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border-left: 4px solid #4f46e5;
+        }
+
+        .card:hover {
+          background: #f9fafb;
+          transform: translateY(-3px);
+          box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+          margin: 0 0 0.5rem;
+          font-size: 1.25rem;
+          color: #4f46e5;
+        }
+
+        .card p {
+          margin: 0.25rem 0;
+          color: #374151;
+        }
+
+        /* Forms */
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          background: white;
+          padding: 2rem;
+          border-radius: 16px;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        form input, form textarea {
+          padding: 0.75rem 1rem;
+          border: 2px solid #e5e7eb;
+          border-radius: 8px;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        form input:focus, form textarea:focus {
+          outline: none;
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+
+           .search-bar {
+              margin-bottom: 15px;
+            }
+            .search-bar input {
+              width: 100%;
+              padding: 8px;
+              border-radius: 8px;
+              border: 1px solid #ccc;
+              font-size: 14px;
+            }
+
+        .tag-list {
+          display: inline-flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-top: 8px;
+        }
+
+        .tag {
+          background: linear-gradient(135deg, #4f46e5, #7c3aed);
+          color: white;
+          padding: 4px 10px;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          font-weight: 500;
+        }
+
+        /* Form button */
+        form button {
+          background: linear-gradient(135deg, #4f46e5, #7c3aed);
+          color: white;
+          border: none;
+          padding: 0.8rem;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        form button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(79,70,229,0.3);
+        }
+
+        /* Detail view */
+        .detail-view {
+          background: white;
+          padding: 2rem;
+          border-radius: 16px;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .detail-view h2 {
+          margin-top: 0;
+          color: #4f46e5;
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .detail-view p {
+          margin: 0.5rem 0;
+          color: #374151;
+          font-size: 1rem;
+        }
+
+        .detail-view a {
+          color: #4f46e5;
+          font-weight: 600;
+          text-decoration: none;
+          border: 2px solid #4f46e5;
+          padding: 2px 4px;
+          border-radius: 4px;
+          transition: all 0.3s ease;
+        }
+
+        .detail-view a:hover {
+          background: #4f46e5;
+          color: white;
+        }
+
+        /* Edit button */
+        .btn-edit {
+          background: #e67e22;
+          color: white;
+          border: none;
+          padding: 0.7rem 1.2rem;
+          border-radius: 8px;
+          cursor: pointer;
+          margin-top: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        .btn-edit:hover {
+          background: #d35400;
+          transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Session Dashboard</h1>
+    <div>
+        <button onclick="showAllSessions()">All Sessions</button>
+        <button onclick="showNewSessionForm()">New Session</button>
+    </div>
+</header>
+
+<div class="container" id="content"></div>
+
+<script>
+    const apiBase = "http://localhost:8080/session";
+
+    async function showAllSessions() {
+  const res = await fetch(apiBase);
+  const sessions = await res.json();
+  const container = document.getElementById("content");
+
+  // Create search bar
+  container.innerHTML = `
+    <div class="search-bar">
+      <input type="text" id="sessionSearch" placeholder="Search sessions...">
+    </div>
+    <div id="sessionList"></div>
+  `;
+
+  const listContainer = document.getElementById("sessionList");
+
+  // Utility: format datetime like in showSessionDetails
+  function formatDate(raw) {
+    let formatted = raw;
+    if (raw) {
+      try {
+        const date = new Date(raw);
+        formatted = date.toLocaleString(undefined, {
+          weekday: "short",
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      } catch (e) {
+        console.warn("Could not parse date:", raw);
+      }
+    }
+    return formatted || "";
+  }
+
+  // Utility: render sessions
+  function renderSessions(data) {
+    listContainer.innerHTML = "";
+    data.forEach(session => {
+      const formattedDate = formatDate(session.start);
+
+      // Tags as styled spans (with spaces)
+      let tagsHtml = "";
+      if (session.tags) {
+        const tagsArray = session.tags.split(",").map(t => t.trim()).filter(Boolean);
+        tagsHtml = `<span class="tag-list">` +
+          tagsArray.map(tag => `<span class="tag">${tag}</span>`).join(" ") +
+          `</span>`;
+      }
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <h3>${session.title}</h3>
+        <p><b>By:</b> ${session.creatorId}</p>
+        <p><b>Start:</b> ${formattedDate}</p>
+        <p><b>Tags:</b> ${tagsHtml}</p>
+        <p><b>Meeting:</b> <a href="${session.meetingLink}" target="_blank">Join</a></p>
+      `;
+      card.onclick = () => showSessionDetails(session.id);
+      listContainer.appendChild(card);
+    });
+  }
+
+  // Initial render
+  renderSessions(sessions);
+
+  // Search handler
+  document.getElementById("sessionSearch").addEventListener("input", e => {
+    const query = e.target.value.toLowerCase();
+    const filtered = sessions.filter(session => {
+      const title = (session.title || "").toLowerCase();
+      const creator = (session.creatorId || "").toLowerCase();
+      const rawStart = (session.start || "").toLowerCase();
+      const formattedStart = formatDate(session.start).toLowerCase();
+      const tags = (session.tags || "").toLowerCase();
+
+      return (
+        title.includes(query) ||
+        creator.includes(query) ||
+        rawStart.includes(query) ||
+        formattedStart.includes(query) ||
+        tags.includes(query)
+      );
+    });
+    renderSessions(filtered);
+  });
+}
+
+
+    async function showSessionDetails(id) {
+      const res = await fetch(`${apiBase}/${id}`);
+      const session = await res.json();
+      const container = document.getElementById("content");
+      // Format datetime into something nice
+            let formattedDate = session.start;
+            if (session.start) {
+              try {
+                const date = new Date(session.start);
+                formattedDate = date.toLocaleString(undefined, {
+                  weekday: "short",
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit"
+                });
+              } catch (e) {
+                console.warn("Could not parse date:", session.start);
+              }
+            }
+
+            // Split tags (if any) into an array and map to styled spans
+            let tagsHtml = "";
+            if (session.tags) {
+              const tagsArray = session.tags.split(",").map(t => t.trim()).filter(Boolean);
+              tagsHtml = `<span class="tag-list">` +
+                  tagsArray.map(tag => `<span class="tag">${tag}</span>`).join(" ") +
+                  `</span>`;
+            }
+      container.innerHTML = `
+        <div class="detail-view">
+          <h2>${session.title}</h2>
+          <p><b>Creator:</b> ${session.creatorId}</p>
+          <p><b>Start:</b> ${formattedDate}</p>
+          <p><b>Duration:</b> ${session.duration} minutes</p>
+          <p><b>Tags:</b> ${tagsHtml}</p>
+          <p><b>Meeting:</b> <a href="${session.meetingLink}" target="_blank">Join</a></p>
+          <p><b>Resources:</b> <a href="${session.resourcesLink}" target="_blank">Resources</a></p>
+          <button class="btn-edit" onclick="showEditSessionForm(${id})">Edit</button>
+        </div>
+      `;
+    }
+
+    function showNewSessionForm() {
+      const container = document.getElementById("content");
+      container.innerHTML = `
+        <h2>Create New Session</h2>
+        <form onsubmit="createSession(event)">
+          <input name="creatorId" placeholder="Creator ID" required>
+          <input name="title" placeholder="Title" required>
+          <input name="start" type="datetime-local" required>
+          <input name="duration" type="number" placeholder="Duration (minutes)" required>
+          <input name="tags" placeholder="Tags">
+          <input name="meetingLink" placeholder="Meeting Link">
+          <input name="resourcesLink" placeholder="Resources Link">
+          <button type="submit">Create</button>
+        </form>
+      `;
+    }
+
+    async function createSession(event) {
+      event.preventDefault();
+      const form = event.target;
+      const data = {
+        creatorId: form.creatorId.value,
+        title: form.title.value,
+        start: form.start.value,
+        duration: parseInt(form.duration.value),
+        tags: form.tags.value,
+        meetingLink: form.meetingLink.value,
+        resourcesLink: form.resourcesLink.value
+      };
+      await fetch(apiBase, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+      showAllSessions();
+    }
+
+    async function showEditSessionForm(id) {
+      const res = await fetch(`${apiBase}/${id}`);
+      const session = await res.json();
+      const container = document.getElementById("content");
+      container.innerHTML = `
+        <h2>Edit Session</h2>
+        <form onsubmit="updateSession(event, ${id})">
+          <input name="creatorId" value="${session.creatorId}" required>
+          <input name="title" value="${session.title}" required>
+          <input name="start" type="datetime-local" value="${session.start.replace(' ', 'T')}" required>
+          <input name="duration" type="number" value="${session.duration}" required>
+          <input name="tags" value="${session.tags || ""}">
+          <input name="meetingLink" value="${session.meetingLink || ""}">
+          <input name="resourcesLink" value="${session.resourcesLink || ""}">
+          <button type="submit">Save</button>
+        </form>
+      `;
+    }
+
+    async function updateSession(event, id) {
+      event.preventDefault();
+      const form = event.target;
+      const data = {
+        creatorId: form.creatorId.value,
+        title: form.title.value,
+        start: form.start.value,
+        duration: parseInt(form.duration.value),
+        tags: form.tags.value,
+        meetingLink: form.meetingLink.value,
+        resourcesLink: form.resourcesLink.value
+      };
+      await fetch(`${apiBase}/${id}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+      showSessionDetails(id);
+    }
+
+    // Load all sessions initially
+    showAllSessions();
+</script>
+</body>
+</html>
