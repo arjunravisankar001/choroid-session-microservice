@@ -3,6 +3,7 @@ package com.ddbs.choroid_session_service.controller;
 import com.ddbs.choroid_session_service.model.Session;
 import com.ddbs.choroid_session_service.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
