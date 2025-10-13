@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ChoroidSessionServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ChoroidSessionServiceApplication.class, args);
+        SpringApplication.run(ChoroidSessionServiceApplication.class, args);
 	}
 
 }

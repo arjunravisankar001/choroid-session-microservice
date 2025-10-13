@@ -22,11 +22,12 @@ dependencies {
     // For web applications
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    // For database access with JPA and Hibernate
+    // For postgresql database access with JPA and Hibernate
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.postgresql:postgresql:42.7.8")
 
     // Use H2 database for simplicity
-    runtimeOnly("com.h2database:h2")
+    //runtimeOnly("com.h2database:h2")
 
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
