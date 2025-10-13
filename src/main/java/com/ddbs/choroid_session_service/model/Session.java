@@ -1,17 +1,9 @@
 package com.ddbs.choroid_session_service.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
 import java.time.LocalDateTime;
 
-@Entity
 public class Session {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //unique session ID
     private String creatorId; //username of the session creator
     private String title; //session title

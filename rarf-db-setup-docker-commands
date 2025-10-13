@@ -1,0 +1,4 @@
+docker cp rarf-schema.sql postgres-db:/rarf-schema.sql
+docker exec -it postgres-db psql -U myuser -d mydatabase -f rarf-schema.sql
+docker cp rarf-data.sql postgres-db:/rarf-data.sql
+docker exec -it postgres-db psql -U myuser -d mydatabase -f rarf-data.sql
