@@ -57,6 +57,21 @@ public class SessionRepository {
         return session;
     }
 
+    public Session update(Session session) {
+        jdbcTemplate.update(
+                "UPDATE session SET creator_id = ?, title = ?, start = ?, duration = ?, tags = ?, meeting_link = ?, resources_link = ? WHERE id = ?",
+                session.getCreatorId(),
+                session.getTitle(),
+                session.getStart(),
+                session.getDuration(),
+                session.getTags(),
+                session.getMeetingLink(),
+                session.getResourcesLink(),
+                session.getId()
+        );
+        return session;
+    }
+
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM session WHERE id = ?", id);
     }

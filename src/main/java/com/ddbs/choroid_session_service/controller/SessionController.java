@@ -32,8 +32,8 @@ public class SessionController {
         return sessionService.createSession((session));
     }
 
-    @PutMapping("/{id}")
-    public Optional<Session> updateSession(@PathVariable Long id, @RequestBody Session session) {
-        return sessionService.updateSession(id, session);
+    @PutMapping()
+    public Optional<Session> updateSession(@RequestBody Session session) {
+        return sessionService.updateSession(session.getId(), session);
     }
 }

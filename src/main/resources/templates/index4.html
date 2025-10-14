@@ -419,6 +419,7 @@
       event.preventDefault();
       const form = event.target;
       const data = {
+        id: id,
         creatorId: form.creatorId.value,
         title: form.title.value,
         start: form.start.value,
@@ -427,7 +428,7 @@
         meetingLink: form.meetingLink.value,
         resourcesLink: form.resourcesLink.value
       };
-      await fetch(`${apiBase}/${id}`, {
+      await fetch(`${apiBase}`, {
         method: "PUT",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(data)

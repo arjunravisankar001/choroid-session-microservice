@@ -35,7 +35,7 @@ public class SessionService {
             existingSession.setTags(session.getTags());
             existingSession.setMeetingLink(session.getMeetingLink());
             existingSession.setResourcesLink(session.getResourcesLink());
-            return sessionRepository.save(existingSession);
+            return sessionRepository.update(existingSession);
         });
     }
 }
