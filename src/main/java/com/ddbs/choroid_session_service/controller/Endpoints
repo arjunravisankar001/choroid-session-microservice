@@ -1,0 +1,18 @@
+GET choroid/sessions/{id}
+Returns a session identified by its ID.
+
+GET choroid/sessions/tags
+Returns a list of all unique tags used in sessions.
+
+POST choroid/sessions
+Creates and returns a new session with the provided details in the request body.
+
+POST choroid/sessions/search
+Searches for and returns sessions based on criteria provided in the request body.
+
+PATCH choroid/sessions/{id}
+Updates and returns an existing session identified by its ID with the details provided in the request body.
+The session start time can be modified only if the session has not yet started.
+
+DELETE choroid/sessions/{id}
+Deletes a session identified by its ID only if it has not already finished.

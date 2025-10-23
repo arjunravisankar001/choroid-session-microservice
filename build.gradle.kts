@@ -2,6 +2,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.5.5"
 	id("io.spring.dependency-management") version "1.1.7"
+    id("io.freefair.lombok") version "8.4"
 }
 
 group = "com.ddbs"
@@ -10,7 +11,7 @@ description = "Session Management Microservice for Choroid"
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(24)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
@@ -21,17 +22,20 @@ repositories {
 dependencies {
     // For web applications
     implementation("org.springframework.boot:spring-boot-starter-web")
-
-    // For postgresql database access with JPA and Hibernate
+    // For database access
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.postgresql:postgresql:42.7.8")
 
-    // Use H2 database for simplicity
-    //runtimeOnly("com.h2database:h2")
+    compileOnly("org.projectlombok:lombok:1.18.34")
+    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    testCompileOnly("org.projectlombok:lombok")
+    testAnnotationProcessor("org.projectlombok:lombok")
 
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
