@@ -21,7 +21,7 @@ public class SessionService {
     private SessionRepository sessionRepository;
 
     //GET choroid/sessions/{id}
-    public Optional<Session> getSessionById(UUID id) {
+    public Session getSessionById(UUID id) {
         return sessionRepository.findById(id);
     }
 
@@ -45,7 +45,7 @@ public class SessionService {
     }
 
     //PATCH choroid/sessions/{id}
-    public Optional<Session> updateSession(UUID id, UpdateSessionRequest request)
+    public Session updateSession(UUID id, UpdateSessionRequest request)
     {
         UpdateFields updateFields = SessionUpdateMapper.toUpdateFields(request);
         return sessionRepository.update(id, updateFields);

@@ -25,6 +25,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("error", ex.getMessage());
+        if (ex.getMessage().toLowerCase().contains("not found")) {
+            return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

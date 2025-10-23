@@ -59,26 +59,31 @@ public class SessionRepository {
     private final RowMapper<Long> countRowMapper = (rs, rowNum) -> rs.getLong(1);
 
     //GET choroid/sessions/{id}
-    public Optional<Session> findById(UUID id)
+    public Session findById(UUID id)
     {
         String sql = "SELECT * FROM sessions WHERE id = ?";
         try {
             List<Session> results = jdbcTemplate.query(sql, sessionRowMapper, id);
             if (results.isEmpty()) {
-                return Optional.empty();
+                log.error("Session with ID {} not found", id);
+                throw new RuntimeException("Session with ID " + id + " not found");
             }
             else {
-                return Optional.of(results.getFirst());
+                return results.getFirst();
             }
         }
         catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            log.error("Session with ID {} not found", id, e);
+            throw new RuntimeException("Session with ID " + id + " not found", e);
         }
         catch (DataAccessException e) {
             log.error("Database error occurred while fetching session by ID", e);
             throw new RuntimeException("Database error occurred while fetching session", e);
         }
         catch (Exception e) {
+            if (e.getMessage().contains("not found")) {
+                throw (RuntimeException) e;
+            }
             log.error("Unexpected error fetching session by ID", e);
             throw new RuntimeException("Unexpected error occurred while fetching session", e);
         }
@@ -188,14 +193,9 @@ public class SessionRepository {
     }
 
     //PATCH choroid/sessions/{id}
-    public Optional<Session> update(UUID id, UpdateFields updateFields) {
+    public Session update(UUID id, UpdateFields updateFields) {
         try {
-            Optional<Session> existingSession = findById(id);
-            if (existingSession.isEmpty()) {
-                log.error("Session with ID {} not found for update", id);
-                throw new RuntimeException("Session with ID " + id + " not found");
-            }
-            Session session = existingSession.get();
+            Session session = findById(id);
             String sql = updateFields.getSql();
             Object[] params = updateFields.getUpdateParams(id);
             if (sql.contains("start") && session.getStart().isBefore(LocalDateTime.now())) {
@@ -207,8 +207,8 @@ public class SessionRepository {
                 log.error("No rows affected while updating session with ID {}", id);
                 throw new RuntimeException("Update failed, no rows affected");
             }
-            Optional<Session> updatedSession = findById(id);
-            return updatedSession;
+            session = findById(id);
+            return session;
         } catch (DataAccessException e) {
             log.error("Database error occurred while updating session with ID {}", id, e);
             throw new RuntimeException("Database error occurred while updating session", e);
@@ -221,12 +221,7 @@ public class SessionRepository {
     //DELETE choroid/sessions/{id}
     public boolean deleteById(UUID id) {
         String sql = "DELETE FROM sessions WHERE id = ?";
-        Optional<Session> existingSession = findById(id);
-        if (existingSession.isEmpty()) {
-            log.error("Session with ID {} not found for deletion", id);
-            throw new RuntimeException("Session with ID " + id + " not found");
-        }
-        Session session = existingSession.get();
+        Session session = findById(id);
         LocalDateTime end = session.getStart().plusMinutes(session.getDuration());
         if (end.isBefore(LocalDateTime.now())) {
             log.error("Attempt to delete past session with ID {}", id);

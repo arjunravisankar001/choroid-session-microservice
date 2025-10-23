@@ -8,6 +8,7 @@ import com.ddbs.choroid_session_service.model.Session;
 import com.ddbs.choroid_session_service.service.SessionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class SessionController {
     private SessionService sessionService;
 
     @GetMapping("/{id}")
-    public Optional<Session> getSessionById(@PathVariable UUID id) {
+    public Session getSessionById(@PathVariable UUID id) {
         return sessionService.getSessionById(id);
     }
 
@@ -32,6 +33,7 @@ public class SessionController {
         return sessionService.getTags();
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Session createSession(@RequestBody @Valid CreateSessionRequest request) {
         return sessionService.createSession(request);
@@ -44,7 +46,7 @@ public class SessionController {
     }
 
     @PatchMapping("/{id}")
-    public Optional<Session> updateSession(@PathVariable UUID id, @RequestBody @Valid UpdateSessionRequest request)
+    public Session updateSession(@PathVariable UUID id, @RequestBody @Valid UpdateSessionRequest request)
     {
         return sessionService.updateSession(id, request);
     }
