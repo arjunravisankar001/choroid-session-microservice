@@ -52,7 +52,7 @@ public class SessionController {
     }
 
     @DeleteMapping("/{id}")
-    public boolean deleteSession(@PathVariable UUID id) {
-        return sessionService.deleteSession(id);
+    public void deleteSession(@PathVariable UUID id) {
+        sessionService.deleteSession(id);
     }
 }

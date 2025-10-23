@@ -209,13 +209,16 @@ public class SessionRepository {
             log.error("Database error occurred while updating session with ID {}", id, e);
             throw new RuntimeException("Database error occurred while updating session", e);
         } catch (Exception e) {
+            if (e.getMessage().contains("not found")) {
+                throw (RuntimeException) e;
+            }
             log.error("Unexpected error updating session with ID {}", id, e);
             throw new RuntimeException("Unexpected error occurred while updating session", e);
         }
     }
 
     //DELETE choroid/sessions/{id}
-    public boolean deleteById(UUID id) {
+    public void deleteById(UUID id) {
         String sql = "DELETE FROM sessions WHERE id = ?";
         Session session = findById(id);
         LocalDateTime end = session.getStart().plusMinutes(session.getDuration());
@@ -225,11 +228,17 @@ public class SessionRepository {
         }
         try {
             int rowsAffected = jdbcTemplate.update(sql, id);
-            return rowsAffected > 0;
+            if (rowsAffected == 0) {
+                log.error("No rows affected while deleting session with ID {}", id);
+                throw new RuntimeException("Delete failed, no rows affected");
+            }
         } catch (DataAccessException e) {
             log.error("Database error occurred while deleting session with ID {}", id, e);
             throw new RuntimeException("Database error occurred while deleting session", e);
         } catch (Exception e) {
+            if (e.getMessage().contains("not found") || e.getMessage().contains("no rows affected")) {
+                throw (RuntimeException) e;
+            }
             log.error("Unexpected error deleting session with ID {}", id, e);
             throw new RuntimeException("Unexpected error occurred while deleting session", e);
         }

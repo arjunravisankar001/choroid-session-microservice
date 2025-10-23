@@ -52,8 +52,8 @@ public class SessionService {
     }
 
     //DELETE choroid/sessions/{id}
-    public boolean deleteSession(UUID id)
+    public void deleteSession(UUID id)
     {
-        return sessionRepository.deleteById(id);
+        sessionRepository.deleteById(id);
     }
 }
