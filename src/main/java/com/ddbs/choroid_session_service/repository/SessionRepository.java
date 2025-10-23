@@ -72,19 +72,15 @@ public class SessionRepository {
                 return results.getFirst();
             }
         }
-        catch (EmptyResultDataAccessException e) {
-            log.error("Session with ID {} not found", id, e);
-            throw new RuntimeException("Session with ID " + id + " not found", e);
-        }
         catch (DataAccessException e) {
-            log.error("Database error occurred while fetching session by ID", e);
+            log.error("Database error occurred while fetching session by ID {}", id, e);
             throw new RuntimeException("Database error occurred while fetching session", e);
         }
         catch (Exception e) {
             if (e.getMessage().contains("not found")) {
                 throw (RuntimeException) e;
             }
-            log.error("Unexpected error fetching session by ID", e);
+            log.error("Unexpected error fetching session by ID {}", id, e);
             throw new RuntimeException("Unexpected error occurred while fetching session", e);
         }
     }
