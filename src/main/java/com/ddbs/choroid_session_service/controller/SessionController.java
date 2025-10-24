@@ -23,6 +23,16 @@ public class SessionController {
     @Autowired
     private SessionService sessionService;
 
+    @GetMapping("/count")
+    public Long getSessionCount() {
+        return sessionService.getSessionCount();
+    }
+
+    @GetMapping
+    public List<Session> getAllSessions() {
+        return sessionService.getAllSessions();
+    }
+
     @GetMapping("/{id}")
     public Session getSessionById(@PathVariable UUID id) {
         return sessionService.getSessionById(id);

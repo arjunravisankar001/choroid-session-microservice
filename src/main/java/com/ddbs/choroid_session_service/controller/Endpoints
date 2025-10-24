@@ -1,3 +1,9 @@
+GET choroid/sessions/count
+Returns the total number of sessions available.
+
+GET choroid/sessions
+Returns a list of all sessions.
+
 GET choroid/sessions/{id}
 Returns a session identified by its ID.
 

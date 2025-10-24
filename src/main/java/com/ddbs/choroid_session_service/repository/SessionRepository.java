@@ -58,6 +58,36 @@ public class SessionRepository {
 
     private final RowMapper<Long> countRowMapper = (rs, rowNum) -> rs.getLong(1);
 
+    //GET choroid/sessions/count
+    public Long countAllSessions()
+    {
+        String sql = "SELECT COUNT(*) FROM sessions";
+        try {
+            return jdbcTemplate.queryForObject(sql, countRowMapper);
+        } catch (DataAccessException e) {
+            log.error("Database error occurred while counting sessions", e);
+            throw new RuntimeException("Database error occurred while counting sessions", e);
+        } catch (Exception e) {
+            log.error("Unexpected error counting sessions", e);
+            throw new RuntimeException("Unexpected error occurred while counting sessions", e);
+        }
+    }
+
+    //GET choroid/sessions
+    public List<Session> findAllSessions()
+    {
+        String sql = "SELECT * FROM sessions";
+        try {
+            return jdbcTemplate.query(sql, sessionRowMapper);
+        } catch (DataAccessException e) {
+            log.error("Database error occurred while fetching all sessions", e);
+            throw new RuntimeException("Database error occurred while fetching all sessions", e);
+        } catch (Exception e) {
+            log.error("Unexpected error fetching all sessions", e);
+            throw new RuntimeException("Unexpected error occurred while fetching all sessions", e);
+        }
+    }
+
     //GET choroid/sessions/{id}
     public Session findById(UUID id)
     {

@@ -20,6 +20,16 @@ public class SessionService {
     @Autowired
     private SessionRepository sessionRepository;
 
+    //GET choroid/sessions/count
+    public Long getSessionCount() {
+        return sessionRepository.countAllSessions();
+    }
+
+    //GET choroid/sessions
+    public List<Session> getAllSessions() {
+        return sessionRepository.findAllSessions();
+    }
+
     //GET choroid/sessions/{id}
     public Session getSessionById(UUID id) {
         return sessionRepository.findById(id);
