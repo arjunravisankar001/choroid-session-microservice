@@ -13,21 +13,32 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> details = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
-            errors.put(error.getField(), error.getDefaultMessage())
+                details.put(error.getField(), error.getDefaultMessage())
         );
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        response.put("status", 400);
+        response.put("error", "Bad Request");
+        response.put("message", "The request is malformed.");
+        response.put("details", details);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
-        Map<String, String> errors = new HashMap<>();
-        errors.put("error", ex.getMessage());
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("details", ex.getMessage());
         if (ex.getMessage().toLowerCase().contains("not found")) {
-            return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+            response.put("status", 404);
+            response.put("error", "Not Found");
+            response.put("message", "The requested resource could not be found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+        response.put("status", 500);
+        response.put("error", "Internal Server Error");
+        response.put("message", "An unexpected error occurred.");
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
