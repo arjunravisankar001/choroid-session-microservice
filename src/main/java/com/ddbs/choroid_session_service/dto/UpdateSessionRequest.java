@@ -13,7 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UpdateSessionRequest {
+public class UpdateSessionRequest implements java.io.Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @NotBlankIfPresent(message = "Session title must be non-empty if present")
     private String title;

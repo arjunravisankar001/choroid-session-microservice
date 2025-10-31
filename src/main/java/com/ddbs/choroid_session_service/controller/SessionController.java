@@ -6,6 +6,7 @@ import com.ddbs.choroid_session_service.dto.SearchSessionRequest;
 import com.ddbs.choroid_session_service.dto.UpdateSessionRequest;
 import com.ddbs.choroid_session_service.model.Session;
 import com.ddbs.choroid_session_service.service.SessionService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class SessionController {
     }
 
     @GetMapping("/{id}")
-    public Session getSessionById(@PathVariable UUID id) {
+    public Session getSessionById(@PathVariable UUID id) throws JsonProcessingException {
         return sessionService.getSessionById(id);
     }
 
@@ -45,7 +46,7 @@ public class SessionController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Session createSession(@RequestBody @Valid CreateSessionRequest request) {
+    public Session createSession(@RequestBody @Valid CreateSessionRequest request) throws JsonProcessingException {
         return sessionService.createSession(request);
     }
 
@@ -56,13 +57,12 @@ public class SessionController {
     }
 
     @PatchMapping("/{id}")
-    public Session updateSession(@PathVariable UUID id, @RequestBody @Valid UpdateSessionRequest request)
-    {
+    public Session updateSession(@PathVariable UUID id, @RequestBody @Valid UpdateSessionRequest request) throws JsonProcessingException {
         return sessionService.updateSession(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSession(@PathVariable UUID id) {
+    public void deleteSession(@PathVariable UUID id) throws JsonProcessingException {
         sessionService.deleteSession(id);
     }
 }

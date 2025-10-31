@@ -12,7 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class SearchSessionRequest {
+public class SearchSessionRequest implements java.io.Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @NotBlankIfPresent(message = "Creator ID must be non-empty if present")
     private String creatorId;

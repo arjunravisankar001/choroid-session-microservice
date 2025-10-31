@@ -11,7 +11,7 @@ description = "Session Management Microservice for Choroid"
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
 
@@ -38,6 +38,11 @@ dependencies {
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    implementation("org.apache.spark:spark-core_2.12:3.5.3")
+    implementation("org.apache.spark:spark-sql_2.12:3.5.3")
+    implementation("javax.servlet:javax.servlet-api:4.0.1")
+    implementation("org.apache.tomcat.embed:tomcat-embed-jasper")
 }
 
 tasks.withType<Test> {
