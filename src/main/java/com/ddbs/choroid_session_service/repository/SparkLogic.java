@@ -83,7 +83,7 @@ public class SparkLogic {
                 .config("spark.driver.memory", "2g")
 //                .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
                 .config("spark.jars", "./libs/h2.jar")
-                .config("spark.ui.enabled", "false")
+                .config("spark.ui.enabled", "true")
                 .config("spark.ui.port", sparkPort)
                 .config("spark.driver.extraJavaOptions",
                         "--add-opens=java.base/java.lang=ALL-UNNAMED " +
