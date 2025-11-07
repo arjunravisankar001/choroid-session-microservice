@@ -162,15 +162,23 @@ public class SparkSessionRepository {
             //Get total count for pagination
             long totalItems = sessionData.count();
             int totalPages = (int) Math.ceil((double) totalItems / size);
+
+            List<SessionSpark> collected = sessionData.collectAsList();
+
+            List<SessionSpark> paged = collected.stream()
+                    .skip(offset)
+                    .limit(size)
+                    .toList();
+
             return new PageResponse<Session>(
-                    sessionData.collectAsList().stream().map(ss -> {
+                    paged.stream().map(ss -> {
                         try {
                             return convertSessionSparkToSession(ss);
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException(e);
                         }
                     }).collect(Collectors.toList()),
-                    offset / size,
+                    page,
                     size,
                     totalItems,
                     totalPages
