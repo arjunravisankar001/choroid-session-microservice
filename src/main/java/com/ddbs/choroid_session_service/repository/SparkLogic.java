@@ -26,6 +26,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -63,8 +64,8 @@ public class SparkLogic {
     @Value("${spring.datasource.driver-class-name}")
     String datasourceDriver;
 
-    @Value("${spark-port}")
-    String sparkPort;
+//    @Value("${spark-port}")
+//    String sparkPort;
 
     @EventListener(ApplicationReadyEvent.class)
     public void initSpark() {
@@ -84,7 +85,12 @@ public class SparkLogic {
 //                .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
                 .config("spark.jars", "./libs/h2.jar")
                 .config("spark.ui.enabled", "true")
-                .config("spark.ui.port", sparkPort)
+                // Avoid hostname parsing issues on Windows when ComputerName contains underscores
+                .config("spark.driver.host", "127.0.0.1")
+                .config("spark.driver.bindAddress", "127.0.0.1")
+                // If another Spark UI is running, pick a different port deterministically
+                .config("spark.ui.port", "4042")
+                // .config("spark.ui.port", sparkPort)
                 .config("spark.driver.extraJavaOptions",
                         "--add-opens=java.base/java.lang=ALL-UNNAMED " +
                                 "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED " +
@@ -174,11 +180,16 @@ public class SparkLogic {
                 sessionRowEncoder
         );
 
+        truncateTable();
+
         dbData.write().format("jdbc").option("url", jdbcUrl)
                 .option("dbtable", "SESSIONS")
                 .option("user", dbUsername)
                 .option("password", dbPassword)
-                .option("driver", datasourceDriver).mode("Overwrite").save();
+                .option("driver", datasourceDriver)
+                .option("stringtype", "unspecified")
+                .mode(SaveMode.Append)
+                .save();
     }
 
     @PreDestroy
@@ -240,7 +251,19 @@ public class SparkLogic {
         ObjectMapper objectMapper = new ObjectMapper();
         String tagsJson = objectMapper.writeValueAsString(sessionSpark.getTags());
         return new SessionRow(sessionSpark.getId(), sessionSpark.getCreatorId(), sessionSpark.getTitle(), Timestamp.valueOf(sessionSpark.getStart()), sessionSpark.getDuration(), tagsJson, sessionSpark.getMeetingLink(), sessionSpark.getResourcesLink());
+    }
 
+    private void truncateTable() {
+        try (java.sql.Connection conn = java.sql.DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
+             java.sql.Statement stmt = conn.createStatement()) {
+
+            stmt.execute("TRUNCATE TABLE SESSIONS");
+            log.info("Table SESSIONS truncated successfully");
+
+        } catch (Exception e) {
+            log.error("Error truncating table", e);
+            throw new RuntimeException("Failed to truncate SESSIONS table", e);
+        }
     }
 }
 
