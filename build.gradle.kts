@@ -39,6 +39,8 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:3.1.8")
+
     implementation("org.apache.spark:spark-core_2.12:3.5.3")
     implementation("org.apache.spark:spark-sql_2.12:3.5.3")
     implementation("javax.servlet:javax.servlet-api:4.0.1")
