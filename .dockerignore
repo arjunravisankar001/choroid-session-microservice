@@ -1,0 +1,20 @@
+# Gradle build outputs
+/build/
+
+# Logs
+logs/
+
+# IDE / VCS
+.idea/
+.gradle/
+.git/
+.gitignore
+
+# Node / misc (if ever added)
+node_modules/
+
+# OS / editor
+*.swp
+.DS_Store
+Thumbs.db
+
